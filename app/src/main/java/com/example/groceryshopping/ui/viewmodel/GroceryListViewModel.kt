@@ -6,7 +6,7 @@ import com.example.groceryshopping.data.model.GroceryList
 import com.example.groceryshopping.data.model.Product
 import java.util.UUID
 
-class GroceryListViewModel : ViewModel() {
+open class GroceryListViewModel : ViewModel() {
     private val _groceryLists = mutableStateListOf<GroceryList>()
     val groceryLists: List<GroceryList> = _groceryLists
 

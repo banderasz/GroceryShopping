@@ -31,15 +31,13 @@ fun GroceryListOverviewScreen(viewModel: GroceryListViewModel, openList: (UUID) 
 
     Scaffold(
         floatingActionButton = {
-            // Define the FloatingActionButton and its action
             FloatingActionButton(onClick = { showDialog = true }) {
-                Icon(Icons.Filled.Add, contentDescription = "Add List")
+                Icon(Icons.Filled.Add, contentDescription = "Add Grocery List")
             }
         }
     ) { innerPadding ->
         val groceryLists by remember { mutableStateOf(viewModel.groceryLists) }
 
-        // Display the list of grocery lists
         LazyColumn(contentPadding = innerPadding) {
             items(groceryLists) { list ->
                 GroceryListItem(

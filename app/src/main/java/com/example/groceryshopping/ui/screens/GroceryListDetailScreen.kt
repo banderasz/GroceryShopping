@@ -47,7 +47,7 @@ fun GroceryListDetailScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("List Details") },
+                title = { list?.name?.let { Text(it) } },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
                         Icon(Icons.Filled.ArrowBack, contentDescription = "Back")
