@@ -10,9 +10,10 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -22,23 +23,28 @@ import com.example.groceryshopping.data.model.Product
 import com.example.groceryshopping.ui.composables.AddProductDialog
 import com.example.groceryshopping.ui.composables.ProductItem
 import com.example.groceryshopping.ui.viewmodel.GroceryListViewModel
-import java.util.UUID
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun GroceryListDetailScreen(
     navController: NavController,
-    listId: UUID,
+    groceryListId: String,
     viewModel: GroceryListViewModel
 ) {
-    val list = viewModel.groceryLists.find { it.id == listId }
     var showDialog by remember { mutableStateOf(false) }
+
+    LaunchedEffect(groceryListId) {
+        viewModel.fetchProductsForList(groceryListId)
+    }
 
     if (showDialog) {
         AddProductDialog(
             onDismiss = { showDialog = false },
             onConfirm = { productName, productAmount ->
-                viewModel.addProductToList(listId, Product(productName, productAmount))
+                viewModel.addProductToGroceryList(
+                    groceryListId,
+                    Product(name = productName, quantity = productAmount, listId = groceryListId)
+                )
                 showDialog = false
             }
         )
@@ -47,7 +53,7 @@ fun GroceryListDetailScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { list?.name?.let { Text(it) } },
+                title = { groceryListId.toString() },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
                         Icon(Icons.Filled.ArrowBack, contentDescription = "Back")
@@ -62,14 +68,12 @@ fun GroceryListDetailScreen(
         },
 
         ) { innerPadding ->
-        list?.let {
-            LazyColumn(contentPadding = innerPadding) {
-                items(it.products) { product ->
-                    ProductItem(
-                        product = product,
-                        onRemove = { viewModel.removeProductFromList(listId, product) }
-                    )
-                }
+        val products by viewModel.products.collectAsState()
+        LazyColumn(contentPadding = innerPadding) {
+            items(products) { product ->
+                ProductItem(
+                    product = product
+                ) { viewModel.removeProductFromGroceryList(groceryListId, product.id) }
             }
         }
     }

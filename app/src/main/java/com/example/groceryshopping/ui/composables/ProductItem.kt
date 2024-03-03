@@ -26,7 +26,7 @@ fun ProductItem(product: Product, onRemove: () -> Unit) {
     ) {
         Column(modifier = Modifier.weight(1f)) {
             Text(text = product.name, style = MaterialTheme.typography.bodyMedium)
-            Text(text = "Amount: ${product.amount}", style = MaterialTheme.typography.bodyMedium)
+            Text(text = "Amount: ${product.quantity}", style = MaterialTheme.typography.bodyMedium)
         }
         IconButton(onClick = onRemove) {
             Icon(Icons.Default.Delete, contentDescription = "Delete")

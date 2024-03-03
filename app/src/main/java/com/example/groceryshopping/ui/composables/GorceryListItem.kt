@@ -28,10 +28,6 @@ fun GroceryListItem(groceryList: GroceryList, onRemove: () -> Unit, onClick: () 
     ) {
         Column(modifier = Modifier.weight(1f)) {
             Text(text = groceryList.name, style = MaterialTheme.typography.bodyMedium)
-            Text(
-                text = "Items: ${groceryList.products.size}",
-                style = MaterialTheme.typography.bodyMedium
-            )
         }
         IconButton(onClick = onRemove) {
             Icon(Icons.Default.Delete, contentDescription = "Delete")

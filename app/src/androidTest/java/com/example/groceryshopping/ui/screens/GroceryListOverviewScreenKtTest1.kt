@@ -22,7 +22,7 @@ class GroceryListOverviewScreenTest {
         composeTestRule.onNodeWithContentDescription("Add Grocery List").performClick()
 
         composeTestRule.onNodeWithText("Grocery List Name").performTextInput("IKEA")
-        composeTestRule.onNodeWithText("Add")
+        composeTestRule.onNodeWithText("Add").performClick()
         composeTestRule.onNodeWithText("IKEA").assertExists()
     }
 }

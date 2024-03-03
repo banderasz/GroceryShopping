@@ -15,7 +15,6 @@ import androidx.navigation.navArgument
 import com.example.groceryshopping.ui.screens.GroceryListDetailScreen
 import com.example.groceryshopping.ui.screens.GroceryListOverviewScreen
 import com.example.groceryshopping.ui.viewmodel.GroceryListViewModel
-import java.util.UUID
 
 @Composable
 fun AppNavigation() {
@@ -37,11 +36,13 @@ fun AppNavigation() {
                     route = "groceryListDetail/{listId}",
                     arguments = listOf(navArgument("listId") { type = NavType.StringType })
                 ) { backStackEntry ->
-                    GroceryListDetailScreen(
-                        navController = navController,
-                        listId = UUID.fromString(backStackEntry.arguments?.getString("listId")),
-                        viewModel = groceryListViewModel
-                    )
+                    backStackEntry.arguments?.getString("listId")?.let {
+                        GroceryListDetailScreen(
+                            navController = navController,
+                            groceryListId = it,
+                            viewModel = groceryListViewModel
+                        )
+                    }
                 }
                 composable("register") {
                     RegisterScreen(

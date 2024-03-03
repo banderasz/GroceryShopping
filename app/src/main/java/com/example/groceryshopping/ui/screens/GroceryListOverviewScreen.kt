@@ -8,6 +8,8 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -15,16 +17,27 @@ import androidx.compose.runtime.setValue
 import com.example.groceryshopping.ui.composables.AddGroceryListDialog
 import com.example.groceryshopping.ui.composables.GroceryListItem
 import com.example.groceryshopping.ui.viewmodel.GroceryListViewModel
-import java.util.UUID
+import com.google.firebase.auth.FirebaseAuth
 
 @Composable
-fun GroceryListOverviewScreen(viewModel: GroceryListViewModel, openList: (UUID) -> Unit) {
+fun GroceryListOverviewScreen(viewModel: GroceryListViewModel, openList: (String) -> Unit) {
+    val user = FirebaseAuth.getInstance().currentUser
+    val userId = user?.uid
+
+    if (userId != null) {
+        LaunchedEffect(userId) {
+            viewModel.fetchGroceryLists(userId)
+        }
+    }
+
+
     var showDialog by remember { mutableStateOf(false) }
+
 
     if (showDialog) {
         AddGroceryListDialog(onDismiss = { showDialog = false },
-            onConfirm = { newListName ->
-                viewModel.addGroceryList(newListName)
+            onConfirm = { newGroceryListName ->
+                viewModel.addGroceryList(newGroceryListName, userId.orEmpty())
                 showDialog = false
             })
     }
@@ -36,14 +49,13 @@ fun GroceryListOverviewScreen(viewModel: GroceryListViewModel, openList: (UUID) 
             }
         }
     ) { innerPadding ->
-        val groceryLists by remember { mutableStateOf(viewModel.groceryLists) }
-
+        val groceryLists by viewModel.groceryLists.collectAsState()
         LazyColumn(contentPadding = innerPadding) {
-            items(groceryLists) { list ->
+            items(groceryLists) { groceryList ->
                 GroceryListItem(
-                    groceryList = list,
-                    onRemove = { viewModel.removeGroceryList(list) },
-                    onClick = { openList(list.id) }
+                    groceryList = groceryList,
+                    onRemove = { viewModel.removeGroceryList(groceryList.id) },
+                    onClick = { openList(groceryList.id) }
                 )
             }
         }
